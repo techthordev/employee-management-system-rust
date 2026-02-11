@@ -1,0 +1,14 @@
+# Rust
+/target
+**/target
+
+# Env
+.env
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log

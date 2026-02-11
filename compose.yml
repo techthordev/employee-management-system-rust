@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: ems-db-container
+    userns_mode: "keep-id"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ems_db
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - ems_db_data:/var/lib/postgresql/data
+      - ./database/init/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql:Z
+      - ./database/schema/02-default-schema.sql:/docker-entrypoint-initdb.d/02-default-schema.sql:Z
+      - ./database/schema/03-auth-schema.sql:/docker-entrypoint-initdb.d/03-auth-schema.sql:Z
+      - ./database/data/04-employee-data.sql:/docker-entrypoint-initdb.d/04-employee-data.sql:Z
+      - ./database/data/05-auth-data.sql:/docker-entrypoint-initdb.d/05-auth-data.sql:Z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ems_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  ems_db_data:
+    driver: local

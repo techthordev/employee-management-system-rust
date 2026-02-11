@@ -1,0 +1,22 @@
+INSERT INTO public.employee (first_name, last_name, email) VALUES
+('Lucas','Martinez','lucas@techthordev.com.br'),
+('Sofia','Ramirez','sofia@techthordev.com.br'),
+('Mateo','Gonzalez','mateo@techthordev.com.br'),
+('Valentina','Herrera','valentina@techthordev.com.br'),
+('Diego','Morales','diego@techthordev.com.br'),
+('Camila','Rojas','camila@techthordev.com.br'),
+('Andres','Vargas','andres@techthordev.com.br'),
+('Paula','Castillo','paula@techthordev.com.br'),
+('Javier','Torres','javier@techthordev.com.br'),
+('Natalia','Silva','natalia@techthordev.com.br'),
+
+('Bruno','Pereira','bruno@techthordev.com.br'),
+('Mariana','Almeida','mariana@techthordev.com.br'),
+('Rafael','Costa','rafael@techthordev.com.br'),
+('Fernanda','Araujo','fernanda@techthordev.com.br'),
+('Thiago','Ribeiro','thiago@techthordev.com.br'),
+('Beatriz','Lopes','beatriz@techthordev.com.br'),
+('Gabriel','Teixeira','gabriel@techthordev.com.br'),
+('Larissa','Mendes','larissa@techthordev.com.br'),
+('Eduardo','Barbosa','eduardo@techthordev.com.br'),
+('Renata','Farias','renata@techthordev.com.br');
