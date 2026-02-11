@@ -6,6 +6,8 @@ This project uses **Podman Compose** to run PostgreSQL locally.
 
 ---
 
+
+
 ## 📁 Structure
 
 ```bash
@@ -53,6 +55,9 @@ database/
 * `employee` - Employee records with department assignment
 * Owned by: `rustconnector`
 * Access: Full CRUD for `rustconnector`
+
+|![Schema public](img/ems_db-public.png)|![Schema auth](img/ems_db-auth.png)|
+|--------------------------------------|----------------------------------|
 
 ---
 
