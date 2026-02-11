@@ -38,6 +38,18 @@ employee-management-system-rust/
 └── Cargo.toml               # Rust workspace
 ````
 
+## 📚 Documentation
+
+Detailed documentation is stored in:
+
+📌 `docs/readmes/`
+
+### Available Docs
+
+- [Database Setup](docs/readmes/DATABASE_README.md)
+- [GitHub Setup (git + gh)](docs/readmes/GITHUB_README.md)
+- [Rust Workspace Setup](docs/readmes/WORKSPACE_README.md)
+
 ---
 
 ## 🐘 Database Setup (Podman)
