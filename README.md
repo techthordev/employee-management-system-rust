@@ -45,6 +45,7 @@ Detailed documentation is stored in:
 ### Available Docs
 
 * [Database Setup](https://www.google.com/search?q=docs/readmes/DATABASE_README.md)
+* [SQLx Setup](https://www.google.com/search?q=docs/readmes/SQLX_README.md)
 * [GitHub Setup (git + gh)](https://www.google.com/search?q=docs/readmes/GITHUB_README.md)
 * [Architecture Decision: Why Dioxus?](https://www.google.com/search?q=docs/readmes/WORKSPACE_README.md)
 
