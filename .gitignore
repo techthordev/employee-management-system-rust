@@ -1,14 +1,32 @@
-# Rust
+# --- Rust & Build ---
 /target
 **/target
+# Dioxus-specific build artifacts
+/dist
+/public/build
 
-# Env
+# --- Environment & Secrets ---
+# Crucial: Never commit your DB credentials or JWT keys!
 .env
+.env.*
+!.env.example
 
-# OS / editor
+# --- Database & SQLx ---
+# SQLx metadata for offline builds (if used)
+# .sqlx
+
+# --- UI & Styling ---
+# Tailwind/Bundler cache and dependencies
+node_modules/
+.parcel-cache/
+
+# --- OS / IDE (Fedora, IntelliJ & Zed) ---
 .DS_Store
 .idea/
+*.iml
 .vscode/
-
-# Logs
+.zed/
 *.log
+
+# --- Backups ---
+**/*.rs.bk
