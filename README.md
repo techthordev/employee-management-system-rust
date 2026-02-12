@@ -1,27 +1,23 @@
 # Employee Management System (Rust)
 
-A clean and structured **fullstack Employee Management System** built with **Rust**, focused on modern backend architecture, database design, and scalable project structure.
+A clean and structured **fullstack Employee Management System** built with **Rust**, focused on modern architecture, type-safe database integration, and a unified development workflow.
 
-This project is designed as a learning and portfolio project with real-world patterns:
-service layer, repository layer, database migrations, authentication schema, and a future frontend.
+This project is designed as a portfolio piece demonstrating real-world patterns:
+unified fullstack logic, repository patterns, database migrations, and secure authentication.
 
 ---
 
 ## 🚀 Tech Stack
 
-### Backend
-- **Rust**
-- **Axum** (REST API)
-- **Tokio** (async runtime)
-- **SQLx** (PostgreSQL integration + migrations)
+### Fullstack Framework
+- **Rust** with **Dioxus 0.7**
+- **Axum** (Server-side integration)
+- **Tokio** (Async runtime)
 
-### Database
+### Database & UI
 - **PostgreSQL 18 Alpine**
-- Two-schema design (`public` + `auth`)
-- Sample data included
-
-### Frontend (planned)
-- **Dioxus** (Rust UI framework)
+- **SQLx** (Compile-time verified queries)
+- **Tailwind CSS** (Modern responsive UI)
 
 ---
 
@@ -29,14 +25,16 @@ service layer, repository layer, database migrations, authentication schema, and
 
 ```txt
 employee-management-system-rust/
-├── backend/                 # Axum REST API (Rust)
-├── frontend/                # Dioxus UI (planned)
-├── shared/                  # Shared types (planned)
+├── src/                     # Unified Source (Frontend UI + Server Functions)
 ├── database/                # PostgreSQL init scripts (schema + sample data)
+├── docs/                    # Detailed documentation
+├── assets/                  # Static assets & Tailwind CSS
 ├── compose.yml              # Podman Compose configuration
-├── .env                     # local env variables
-└── Cargo.toml               # Rust workspace
-````
+├── Dioxus.toml              # Dioxus CLI settings
+├── .env                     # Local environment variables
+└── Cargo.toml               # Project dependencies
+
+```
 
 ## 📚 Documentation
 
@@ -46,9 +44,9 @@ Detailed documentation is stored in:
 
 ### Available Docs
 
-- [Database Setup](docs/readmes/DATABASE_README.md)
-- [GitHub Setup (git + gh)](docs/readmes/GITHUB_README.md)
-- [Rust Workspace Setup](docs/readmes/WORKSPACE_README.md)
+* [Database Setup](https://www.google.com/search?q=docs/readmes/DATABASE_README.md)
+* [GitHub Setup (git + gh)](https://www.google.com/search?q=docs/readmes/GITHUB_README.md)
+* [Architecture Decision: Why Dioxus?](https://www.google.com/search?q=docs/readmes/WORKSPACE_README.md)
 
 ---
 
@@ -60,19 +58,14 @@ The database runs locally via **Podman Compose**.
 
 ```bash
 podman compose up -d
-```
 
-### Check status
-
-```bash
-podman ps
-podman logs -f ems-db-container
 ```
 
 ### Stop PostgreSQL
 
 ```bash
 podman compose down
+
 ```
 
 ---
@@ -83,39 +76,23 @@ Create a `.env` file in the project root:
 
 ```env
 DATABASE_URL=postgres://rustconnector:rustconnector@localhost:5432/ems_db
-SERVER_ADDR=127.0.0.1:3000
-POSTGRES_PORT=5432
-POSTGRES_PASSWORD=postgres
+
 ```
 
 ---
 
-## 🦀 Running the Backend
+## 🦀 Running the Application
+
+The project uses the **Dioxus CLI** to manage both frontend and backend.
+
+### Start Development Server
 
 ```bash
-cd backend
-cargo run
-```
-
-Backend will run on:
+dx serve
 
 ```
-http://127.0.0.1:3000
-```
 
----
-
-## 🧪 Health Check
-
-```bash
-curl http://127.0.0.1:3000/health
-```
-
-Expected output:
-
-```
-OK
-```
+The app will be available at `http://127.0.0.1:8080` with **Hot Reload** enabled.
 
 ---
 
@@ -127,41 +104,39 @@ OK
 podman compose down
 podman volume rm ems_db_data
 podman compose up -d
+
 ```
 
 ---
 
 ## 🗺️ Roadmap
 
-### Phase 1 (Database + Setup)
+### Phase 1 (Core & Foundation) ✅
 
 * [x] PostgreSQL setup (Podman Compose)
-* [x] init scripts (schemas + sample data)
+* [x] Unified Dioxus Fullstack architecture
+* [x] Tailwind CSS integration
 
-### Phase 2 (Backend API)
+### Phase 2 (Backend Logic & Data) 🚧
 
-* [ ] SQLx migrations
-* [ ] Employee CRUD endpoints
-* [ ] Department CRUD endpoints
-* [ ] Authentication (RBAC)
+* [ ] SQLx migrations & compile-time verification
+* [ ] Employee CRUD Server Functions
+* [ ] Authentication (JWT & RBAC)
 
-### Phase 3 (Frontend)
+### Phase 3 (Frontend & Dashboard) 📅
 
-* [ ] Dioxus frontend UI
-* [ ] Login + role-based UI access
-* [ ] Dashboard views
+* [ ] Interactive Dashboard views
+* [ ] Role-based UI access control
+* [ ] Advanced filtering and reporting
 
 ---
 
 ## 📌 Notes
 
-This project is intentionally structured like a real backend system:
-controllers/handlers, services, repositories, clean separation of concerns.
-
-The goal is not just CRUD, but maintainable architecture.
+By using **Dioxus Fullstack**, we eliminate the need for manual REST boilerplate. We use **Server Functions** to bridge the gap between the browser and PostgreSQL, ensuring 100% type safety across the entire network boundary.
 
 ---
 
 ## 📜 License
 
-MIT (or choose your preferred license)
+MIT

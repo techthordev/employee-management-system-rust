@@ -1,152 +1,44 @@
-# Rust Workspace Setup
+# 🦀 Architecture Decision: Dioxus Fullstack
 
-This project is organized as a **Rust Cargo Workspace**.
-
-A workspace is used to manage multiple crates (backend, frontend, shared) inside one repository
-while keeping dependencies and build commands consistent.
+This document outlines the reasoning behind choosing **Dioxus** as the core framework for the Employee Management System.
 
 ---
 
-## 📌 Why a Workspace?
+## 📌 Why Dioxus?
 
-Using a workspace provides:
+Dioxus was selected to leverage the power of **Rust** across the entire stack, providing a seamless bridge between high-performance backend logic and a modern, reactive user interface.
 
-- one central `Cargo.lock`
-- shared dependency management
-- clean separation between backend / frontend / shared code
-- scalable project structure for fullstack development
-- easier CI/CD setup later
+### 1. Single-Language Fullstack Power
+Using Rust for both the server and the frontend (via WebAssembly) eliminates the "context switching" between different languages. This ensures:
+- **Shared Logic:** Validation rules and data models are defined once and used everywhere.
+- **Type Safety:** Changes in the backend API are caught by the compiler in the frontend immediately.
 
-This is the standard structure for professional Rust monorepos.
+### 2. High Performance (WASM)
+By compiling to **WebAssembly**, the frontend delivers near-native performance. This is crucial for data-heavy management systems that require fast sorting, filtering, and rendering of employee records.
 
----
-
-## 📁 Workspace Structure
-
-```txt
-employee-management-system-rust/
-├── Cargo.toml               # Workspace root
-├── Cargo.lock               # Shared dependency lockfile
-├── backend/                 # Backend REST API crate (Axum)
-├── frontend/                # Frontend crate (Dioxus, planned)
-├── shared/                  # Shared library crate (planned)
-└── target/                  # Build artifacts (ignored in git)
-````
+### 3. Server Functions (RPC Pattern)
+Dioxus allows for an **RPC-like** development experience. Instead of manually defining REST endpoints and fetching them via `JSON` in TypeScript, we use **Server Functions**. This simplifies the architecture while maintaining full control over the communication layer.
 
 ---
 
-## ⚙️ Workspace Root Cargo.toml
+## 📁 Integrated Project Structure
 
-The root `Cargo.toml` contains the workspace definition:
+The project follows a unified structure to maximize efficiency:
 
-```toml
-[workspace]
-members = [
-    "backend",
-    "frontend",
-    "shared"
-]
-```
+- **Frontend:** Reactive UI components built with Rust macros.
+- **Backend:** High-performance Axum-based server integration.
+- **Styling:** Utility-first CSS using **Tailwind**, integrated into the Rust build pipeline.
 
 ---
 
-## 🦀 Building the Workspace
+## ⚙️ Developer Experience (DX)
 
-Build all crates:
-
-```bash
-cargo build
-```
-
-Run all tests:
-
-```bash
-cargo test
-```
+Choosing Dioxus provides a modern developer workflow on **Fedora**:
+- **Hot Reloading:** Instant UI updates without full recompilation.
+- **First-Class Tooling:** The Dioxus CLI (`dx`) simplifies building, testing, and deploying the fullstack application.
 
 ---
 
-## ▶️ Running Individual Crates
+## 📌 Conclusion
 
-### Run backend
-
-```bash
-cargo run -p backend
-```
-
-or:
-
-```bash
-cd backend
-cargo run
-```
-
----
-
-## 📦 Adding Dependencies
-
-### Add dependency to backend crate
-
-```bash
-cd backend
-cargo add axum
-```
-
----
-
-## 🔁 Common Commands
-
-### Check formatting
-
-```bash
-cargo fmt
-```
-
-### Run linter (Clippy)
-
-```bash
-cargo clippy
-```
-
-### Build release version
-
-```bash
-cargo build --release
-```
-
----
-
-## ⚠️ Common Workspace Issue
-
-### Error: "failed to load manifest for workspace member"
-
-Example:
-
-```
-failed to load manifest for workspace member frontend
-Caused by: No such file or directory
-```
-
-This happens if the workspace root references a crate folder that does not exist yet.
-
-Fix:
-
-* Create the missing crate folder:
-
-```bash
-cargo new frontend
-cargo new shared --lib
-```
-
-or
-
-* Remove the crate from the `members` list in `Cargo.toml`.
-
----
-
-## 📌 Notes
-
-* The workspace is designed for a long-term scalable fullstack project.
-* `backend` will contain the REST API and business logic.
-* `frontend` will later contain the Dioxus UI.
-* `shared` will contain shared DTOs/types used by both backend and frontend.
+The choice of Dioxus aligns with the goal of building a **maintainable, type-safe, and high-performance** system. It represents the "Rust Way" of web development—combining the safety of a compiled language with the agility of modern web frameworks.
