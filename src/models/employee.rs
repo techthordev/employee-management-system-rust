@@ -27,3 +27,10 @@ pub struct Employee {
     pub email: String,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+pub struct CreateEmployeeRequest {
+    pub first_name: String,
+    pub last_name: String,
+    pub email: String,
+}
+
