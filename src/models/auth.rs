@@ -1,7 +1,9 @@
-use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
+#![allow(dead_code)]
 
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow, PartialEq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "server", derive(sqlx::FromRow))]
 pub struct User {
     pub id: i64,
     pub username: String,
@@ -9,13 +11,15 @@ pub struct User {
     pub enabled: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "server", derive(sqlx::FromRow))]
 pub struct Role {
     pub id: i64,
     pub name: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "server", derive(sqlx::FromRow))]
 pub struct UserRole {
     pub user_id: i64,
     pub role_id: i64,

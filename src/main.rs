@@ -5,6 +5,8 @@ use components::layout::navbar::Navbar;
 
 mod components;
 mod views;
+mod server;
+mod models;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
