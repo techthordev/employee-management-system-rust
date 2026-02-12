@@ -3,7 +3,7 @@
 [web.app]
 
 # HTML title tag content
-title = "temp_dioxus"
+title = "ems-rust"
 
 # include `assets` in web platform
 [web.resource]
