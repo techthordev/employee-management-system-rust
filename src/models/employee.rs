@@ -1,5 +1,22 @@
 use serde::{Deserialize, Serialize};
 
+// The request parameters
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct EmployeeRequest {
+    pub page: i64,
+    pub page_size: i64,
+    pub search_term: Option<String>,
+}
+
+// The paginated response wrapper
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct EmployeeResponse {
+    pub employees: Vec<Employee>,
+    pub total_count: i64,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[cfg_attr(feature = "server", derive(sqlx::FromRow))]
@@ -9,3 +26,4 @@ pub struct Employee {
     pub last_name: String,
     pub email: String,
 }
+
