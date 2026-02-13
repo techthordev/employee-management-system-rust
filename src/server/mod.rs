@@ -1,5 +1,8 @@
 use dioxus::prelude::*;
-use crate::models::employee::{Employee, EmployeeRequest, EmployeeResponse, CreateEmployeeRequest};
+use crate::models::employee::{
+    Employee, 
+    EmployeeRequest, EmployeeResponse, 
+    CreateEmployeeRequest, UpdateEmployeeRequest};
 
 #[cfg(feature = "server")]
 pub mod db;
@@ -68,6 +71,33 @@ pub async fn add_employee(req: CreateEmployeeRequest) -> Result<(), ServerFnErro
         .await
         .map_err(|e| ServerFnError::new(format!("Database error: {}", e)))?;
 
+        Ok(())
+    }
+    #[cfg(not(feature = "server"))]
+    {
+        Err(ServerFnError::new("Server function not available on client"))
+    }
+}
+
+#[server]
+pub async fn update_employee(req: UpdateEmployeeRequest) -> Result<(), ServerFnError> {
+    #[cfg(feature = "server")]
+    {
+        use sqlx::Error as SqlxError;
+        let pool = db::connect_db().await
+            .map_err(|e| ServerFnError::new(format!("DB Connection failed: {}", e)))?;
+        
+        sqlx::query!(
+            "UPDATE employee SET first_name = $1, last_name = $2, email = $3 WHERE id = $4",
+            req.first_name,
+            req.last_name,
+            req.email,
+            req.id
+        )
+        .execute(&pool)
+        .await
+        .map_err(|e: SqlxError| ServerFnError::new(format!("Database error: {}", e)))?;
+        
         Ok(())
     }
     #[cfg(not(feature = "server"))]
