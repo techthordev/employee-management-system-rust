@@ -12,7 +12,10 @@ pub fn EmployeeTable() -> Element {
     let mut new_last_name = use_signal(|| String::new());
     let mut new_email = use_signal(|| String::new());
 
-    // Deine funktionierende Resource-Logik (mit mut)
+    // DELETE MODAL STATE
+    let mut show_delete_modal = use_signal(|| false);
+    let mut delete_target_id = use_signal(|| None::<i64>);
+
     let mut employees_resource = use_resource(move || async move {
         let req = EmployeeRequest {
             page: current_page(),
@@ -23,8 +26,7 @@ pub fn EmployeeTable() -> Element {
     });
 
     let res_data = employees_resource.read_unchecked();
-    
-    // Deine funktionierende Pagination-Berechnung
+
     let (pagination_text, prev_disabled, next_disabled) = if let Some(Ok(res)) = &*res_data {
         let start = (current_page() - 1) * page_size() + 1;
         let end = (start + page_size() - 1).min(res.total_count);
@@ -36,8 +38,8 @@ pub fn EmployeeTable() -> Element {
 
     rsx! {
         div { class: "flex flex-col gap-4 w-full relative",
-            
-            // --- Header: Search & Add Button (Dein ursprüngliches Design) ---
+
+            // HEADER
             div { class: "flex justify-between items-center px-2",
                 input {
                     class: "border rounded-lg px-4 py-2 w-64 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none",
@@ -49,42 +51,64 @@ pub fn EmployeeTable() -> Element {
                     }
                 }
                 button {
-                    class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-all flex items-center gap-2",
+                    class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-all",
                     onclick: move |_| show_modal.set(true),
                     "Add Employee"
                 }
             }
 
-            // --- Table Content (Dein ursprüngliches Design mit blauem Header) ---
+            // TABLE
             div { class: "overflow-x-auto bg-white rounded-lg shadow",
                 table { class: "min-w-full table-fixed divide-y divide-slate-200",
                     thead { class: "bg-blue-50",
                         tr {
-                            th { class: "w-20 px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider", "ID" }
-                            th { class: "w-64 px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider", "First Name" }
-                            th { class: "w-64 px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider", "Last Name" }
-                            th { class: "px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider", "Email" }
+                            th { class: "w-20 px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase", "ID" }
+                            th { class: "w-64 px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase", "First Name" }
+                            th { class: "w-64 px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase", "Last Name" }
+                            th { class: "px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase", "Email" }
+                            th { class: "w-32 px-6 py-3 text-center text-xs font-bold text-blue-700 uppercase", "Actions" }
                         }
                     }
                     tbody { class: "divide-y divide-slate-200 bg-white",
-                        if let Some(Ok(res)) = &*res_data {
+
+                        if let Some(Ok(res)) = employees_resource.read().as_ref() {
                             if res.employees.is_empty() {
-                                tr { td { colspan: "4", class: "px-6 py-8 text-center text-slate-500", "No employees found." } }
+                                tr {
+                                    td { colspan: "5", class: "px-6 py-8 text-center text-slate-500",
+                                        "No employees found."
+                                    }
+                                }
                             } else {
                                 for emp in &res.employees {
                                     tr { class: "h-16 hover:bg-blue-50 transition-colors", key: "{emp.id}",
-                                        td { class: "px-6 py-4 text-sm text-slate-900 truncate", "{emp.id}" }
-                                        td { class: "px-6 py-4 text-sm text-slate-700 truncate", "{emp.first_name}" }
-                                        td { class: "px-6 py-4 text-sm text-slate-700 truncate", "{emp.last_name}" }
-                                        td { class: "px-6 py-4 text-sm text-slate-700 truncate", "{emp.email}" }
+
+                                        td { class: "px-6 py-4 text-sm", "{emp.id}" }
+                                        td { class: "px-6 py-4 text-sm", "{emp.first_name}" }
+                                        td { class: "px-6 py-4 text-sm", "{emp.last_name}" }
+                                        td { class: "px-6 py-4 text-sm", "{emp.email}" }
+
+                                        td { class: "px-6 py-4 text-center",
+                                            button {
+                                                class: "text-red-500 hover:text-red-700 transition-colors p-2",
+                                                onclick: {
+                                                    let id = emp.id;
+                                                    move |_| {
+                                                        delete_target_id.set(Some(id));
+                                                        show_delete_modal.set(true);
+                                                    }
+                                                },
+                                                "Delete"
+                                            }
+                                        }
                                     }
                                 }
                             }
                         } else {
-                            // Skeleton Loader
                             for _ in 0..5 {
-                                tr { class: "h-16 animate-pulse",
-                                    td { colspan: "4", class: "px-6 py-4", div { class: "h-4 bg-slate-100 rounded w-full" } }
+                                tr {
+                                    td { colspan: "5", class: "px-6 py-4",
+                                        div { class: "h-4 bg-slate-100 rounded w-full animate-pulse" }
+                                    }
                                 }
                             }
                         }
@@ -92,7 +116,7 @@ pub fn EmployeeTable() -> Element {
                 }
             }
 
-            // --- Pagination Footer (Dein ursprüngliches Design) ---
+            // PAGINATOR (DEINER – UNVERÄNDERT)
             div { class: "flex items-center justify-end px-4 py-3 bg-white border border-blue-100 rounded-lg text-sm text-slate-600 shadow-sm min-h-[60px] w-full",
                 div { class: "flex items-center justify-end w-48 gap-2",
                     span { "Items per page:" }
@@ -128,45 +152,109 @@ pub fn EmployeeTable() -> Element {
                 }
             }
 
-            // --- Modal (Dein ursprüngliches Design mit Formular-Stil) ---
+            // ADD MODAL
             if show_modal() {
-                div { class: "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm",
-                    div { class: "bg-white rounded-xl shadow-2xl w-[450px] overflow-hidden",
-                        div { class: "bg-blue-600 px-6 py-4", 
-                            h2 { class: "text-white text-xl font-bold", "Add New Employee" } 
-                        }
-                        div { class: "p-6 flex flex-col gap-4",
-                            input { 
-                                class: "border-b-2 p-2 outline-none focus:border-blue-500 transition-colors", 
-                                placeholder: "First Name", 
-                                oninput: move |e| new_first_name.set(e.value()) 
-                            }
-                            input { 
-                                class: "border-b-2 p-2 outline-none focus:border-blue-500 transition-colors", 
-                                placeholder: "Last Name", 
-                                oninput: move |e| new_last_name.set(e.value()) 
-                            }
-                            input { 
-                                class: "border-b-2 p-2 outline-none focus:border-blue-500 transition-colors", 
-                                placeholder: "Email", 
-                                oninput: move |e| new_email.set(e.value()) 
+                div {
+                    class: "fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm",
+                    
+                    onclick: move |_| show_modal.set(false),
+            
+                    div {
+                        class: "bg-white rounded-2xl shadow-2xl w-[520px] overflow-hidden",
+                        onclick: move |e| e.stop_propagation(),
+            
+                        // HEADER
+                        div { class: "px-8 py-5 border-b",
+                            h2 { class: "text-lg font-semibold text-slate-800", "Add New Employee" }
+                            p { class: "text-sm text-slate-500 mt-1",
+                                "Create a new employee record. All fields are required."
                             }
                         }
-                        div { class: "bg-slate-50 px-6 py-4 flex justify-end gap-3",
-                            button { 
-                                class: "px-4 py-2 text-slate-600 font-bold hover:text-slate-800",
-                                onclick: move |_| show_modal.set(false), 
-                                "Cancel" 
+            
+                        // BODY
+                        div { class: "px-8 py-6 flex flex-col gap-5",
+            
+                            // FIRST NAME
+                            div { class: "flex flex-col gap-1",
+                                label {
+                                    class: "text-sm font-medium text-slate-700",
+                                    "First name ",
+                                    span { class: "text-red-500", "*" }
+                                }
+                                input {
+                                    class: "border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition",
+                                    value: "{new_first_name}",
+                                    oninput: move |e| new_first_name.set(e.value())
+                                }
+                                if new_first_name().trim().is_empty() {
+                                    span { class: "text-xs text-red-500",
+                                        "First name is required"
+                                    }
+                                }
                             }
+            
+                            // LAST NAME
+                            div { class: "flex flex-col gap-1",
+                                label {
+                                    class: "text-sm font-medium text-slate-700",
+                                    "Last name ",
+                                    span { class: "text-red-500", "*" }
+                                }
+                                input {
+                                    class: "border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition",
+                                    value: "{new_last_name}",
+                                    oninput: move |e| new_last_name.set(e.value())
+                                }
+                                if new_last_name().trim().is_empty() {
+                                    span { class: "text-xs text-red-500",
+                                        "Last name is required"
+                                    }
+                                }
+                            }
+            
+                            // EMAIL
+                            div { class: "flex flex-col gap-1",
+                                label {
+                                    class: "text-sm font-medium text-slate-700",
+                                    "Email ",
+                                    span { class: "text-red-500", "*" }
+                                }
+                                input {
+                                    class: "border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition",
+                                    value: "{new_email}",
+                                    oninput: move |e| new_email.set(e.value())
+                                }
+                                if !new_email().contains('@') {
+                                    span { class: "text-xs text-red-500",
+                                        "Please enter a valid email address"
+                                    }
+                                }
+                            }
+                        }
+            
+                        // FOOTER
+                        div { class: "px-8 py-5 bg-slate-50 flex justify-end gap-3",
+            
                             button {
-                                class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow-md transition-all",
+                                class: "px-4 py-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100 transition",
+                                onclick: move |_| show_modal.set(false),
+                                "Cancel"
+                            }
+            
+                            button {
+                                class: "px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed",
+                                disabled: new_first_name().trim().is_empty()
+                                    || new_last_name().trim().is_empty()
+                                    || !new_email().contains('@'),
+            
                                 onclick: move |_| async move {
                                     let req = CreateEmployeeRequest {
                                         first_name: new_first_name(),
                                         last_name: new_last_name(),
                                         email: new_email(),
                                     };
-                                    if let Ok(_) = crate::server::add_employee(req).await {
+            
+                                    if crate::server::add_employee(req).await.is_ok() {
                                         new_first_name.set(String::new());
                                         new_last_name.set(String::new());
                                         new_email.set(String::new());
@@ -174,7 +262,54 @@ pub fn EmployeeTable() -> Element {
                                         employees_resource.restart();
                                     }
                                 },
+            
                                 "Save Employee"
+                            }
+                        }
+                    }
+                }
+            }
+
+            // DELETE MODAL
+            if show_delete_modal() {
+                div { class: "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm",
+                    div { class: "bg-white rounded-xl shadow-2xl w-[420px] overflow-hidden",
+
+                        div { class: "bg-red-600 px-6 py-4",
+                            h2 { class: "text-white text-lg font-bold", "Confirm deletion" }
+                        }
+
+                        div { class: "p-6 text-slate-700",
+                            p { "Do you really want to delete this employee?" }
+                            p { class: "text-sm text-slate-500 mt-2", "This action cannot be undone." }
+                        }
+
+                        div { class: "bg-slate-50 px-6 py-4 flex justify-end gap-3",
+                            button {
+                                onclick: move |_| {
+                                    show_delete_modal.set(false);
+                                    delete_target_id.set(None);
+                                },
+                                "Cancel"
+                            }
+                            button {
+                                onclick: move |_| async move {
+                                    if let Some(id) = delete_target_id() {
+                                        if crate::server::delete_employee(id).await.is_ok() {
+                                            if let Some(Ok(res)) = employees_resource.read().as_ref() {
+                                                let new_total = res.total_count.saturating_sub(1);
+                                                let max_page = ((new_total + page_size() - 1) / page_size()).max(1);
+                                                if current_page() > max_page {
+                                                    current_page.set(max_page);
+                                                }
+                                            }
+                                            employees_resource.restart();
+                                        }
+                                    }
+                                    show_delete_modal.set(false);
+                                    delete_target_id.set(None);
+                                },
+                                "Delete"
                             }
                         }
                     }

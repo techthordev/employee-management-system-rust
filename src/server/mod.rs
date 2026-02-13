@@ -75,3 +75,22 @@ pub async fn add_employee(req: CreateEmployeeRequest) -> Result<(), ServerFnErro
         Err(ServerFnError::new("Server function not available on client"))
     }
 }
+
+#[server]
+pub async fn delete_employee(id: i64) -> Result<(), ServerFnError> {
+    #[cfg(feature = "server")]
+    {
+        use sqlx::Error as SqlxError;
+        let pool = db::connect_db().await
+            .map_err(|e| ServerFnError::new(format!("DB Connection failed: {}", e)))?;
+        
+        sqlx::query!("DELETE FROM employee WHERE id = $1", id)
+            .execute(&pool)
+            .await
+            .map_err(|e: SqlxError| ServerFnError::new(format!("Database error: {}", e)))?;
+
+        Ok(())
+    }
+    #[cfg(not(feature = "server"))]
+    { Err(ServerFnError::new("Server function not available on client")) }
+}
